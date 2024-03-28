@@ -51,9 +51,7 @@ router.get('/plastic_count',checkAuth,(req,res,next)=>{
         })
     });
 });
-//select
-//de select
-//returning (quantity)
+
 router.post('/return',checkAuth,(req,res,next)=>{
     const userId = req.userData.userId;
     const {date,item,token}=req.body;
