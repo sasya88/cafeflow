@@ -1,0 +1,6 @@
+{
+    "env":{
+        "MONGO_ATLAS_PW":"953N200P",
+        "JWT_KEY":"sasya"
+    }
+}
