@@ -86,7 +86,7 @@ router.post('/',checkAuth, async (req, res, next) => {
         user.orderDetails.push(order_details);
         user.plasticDetails.push(...plasticItems);
         await user.save();
-        //we have to return order details to flutter so that on clicking confirm we can handle accordingly 
+        
         return res.status(200).json({
             message: 'Ordered placed',
             items:items,
