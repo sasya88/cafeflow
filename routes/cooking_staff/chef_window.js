@@ -11,7 +11,14 @@ router.get('/orders', (req, res, next) => {
         .then(users => {
             const AllOrderDetails = users.map(user => ({
                 userId: user.userId,
-                orderDetails: user.orderDetails.filter(order => order.status === 'paid')
+                orderDetails: user.orderDetails
+            .filter(order => order.status === 'paid')
+            .map(order => ({
+                date: order.date,
+                itemName: order.itemName,
+                quantity: order.quantity,
+                token:order.token
+            }))
             }));
             return res.status(200).json({
                 message: 'active orders',
