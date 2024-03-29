@@ -36,7 +36,7 @@ router.post('/', (req, res,next) => {
             });
             user.save()
                 .then(result => {
-                    signAccessToken(user.userId)
+                    signAccessToken(user.userId,'user')
                 .then(token=>{
                     return res.status(200).json({
                         message:'registrated Successfully',
