@@ -1,9 +1,11 @@
 const morgan = require('morgan');
 const express=require('express');
+const cors=require('cors');
 const bodyParser=require('body-parser');
 const mongoose = require('mongoose');
 const app=express();
 app.use(express.json());
+app.use(cors());
 const User_plasticsRoutes=require('./routes/user/plastics');
 const User_ordersRoutes=require('./routes/user/orders');
 const loginRoutes=require('./routes/user/login');
