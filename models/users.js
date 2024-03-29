@@ -16,12 +16,8 @@ const userSchema = new mongoose.Schema({
     orderDetails: [
         {
             date: { type: String, required: true },
-            orderItems: [
-                {
-                    itemName: { type: String, required: true },
-                    quantity: { type: Number, required: true }
-                }
-            ],
+            itemName: { type: String, required: true },
+            quantity: { type: Number, required: true },
             totalAmount: { type: Number, required: true },
             status: { type: String, required: true },
             token: { type: Number, required: true },
