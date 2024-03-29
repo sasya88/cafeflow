@@ -28,10 +28,10 @@ router.get('/',checkAuth, (req, res,next) => {
         })
     });
 });
-//ordering food
+
 router.post('/',checkAuth, async (req, res, next) => {
     const userId = req.userData.userId;
-    const { date, items } = req.body;
+    const { date, itemName,quantity} = req.body;
 
     try {
         const user = await User.findOne({ userId }).exec();
@@ -40,57 +40,50 @@ router.post('/',checkAuth, async (req, res, next) => {
                 message: 'User not found'
             });
         }
-
-        let totalAmount = 0;
-        const orderItems = [];
-        const plasticItems = [];
-
-        for (const item of items) {
-            try {
-                const product = await products.findOne({ itemName: item.itemName }).exec();
-                if (!product) {
-                    return res.status(400).json({
-                        message: 'Product is not available'
-                    });
-                }
-                const token = Math.floor(Math.random() * max);
-
-                if (product.category === 'plastic') {
-                    const itemDetails = {
-                        date: date,
-                        itemName: item.itemName,
-                        token: token,
-                        quantity: item.quantity
-                    };
-                    plasticItems.push(itemDetails);
-                    totalAmount += ((product.cost + 10) * item.quantity);
-                } else {
-                    const itemDetails = {
-                        itemName: item.itemName,
-                        quantity: item.quantity
-                    };
-                    orderItems.push(itemDetails);
-                    totalAmount += (product.cost * item.quantity);
-                }
-            } catch (err) {
-                console.error(err);
-                return res.status(500).json({
-                    message: 'Internal server error'
-                });
-            }
+        const product = await products.findOne({ itemName: itemName }).exec();
+        if (!product) {
+            return res.status(400).json({
+                message: 'Product is not available'
+            });
         }
-        const status = 'pending';
         const token = Math.floor(Math.random() * max);
-        const order_details={ date, orderItems, totalAmount, status,token};
+        let totalAmount=0;
+        if (product.category === 'plastic') {
+            
+            const plasticItem = {
+                date: date,
+                itemName: itemName,
+                token: token,
+                quantity: quantity
+            };
+            user.plasticDetails.push(plasticItem);
+            
+            totalAmount += (product.cost + 10) * quantity;
+        } else {
+            
+            const status = 'pending';
+            const orderDetails = {
+                date: date,
+                itemName: itemName,
+                quantity: quantity,
+                totalAmount: product.cost * quantity,
+                status: status,
+                token: token
+            };
+            user.orderDetails.push(orderDetails);
+            
+            totalAmount += product.cost * quantity;
+        }
+
+
         
-        user.orderDetails.push(order_details);
-        user.plasticDetails.push(...plasticItems);
         await user.save();
+
         
         return res.status(200).json({
-            message: 'Ordered placed',
-            items:items,
-            totalAmount: totalAmount
+            message: 'Order placed successfully',
+            totalAmount: totalAmount,
+            token: token
         });
 
     } catch (err) {
