@@ -54,7 +54,7 @@ router.get('/plastic_count',checkAuth,(req,res,next)=>{
 
 router.post('/return',checkAuth,(req,res,next)=>{
     const userId = req.userData.userId;
-    const {date,item,token}=req.body;
+    const {date,itemName,token,quantity}=req.body;
     User.findOne( {userId})
         .exec()
     .then(user=>{
@@ -71,13 +71,29 @@ router.post('/return',checkAuth,(req,res,next)=>{
                 })
             }
             else{
-            user.plasticDetails.pull({date,item,token});
+                const plasticItem = user.plasticDetails.find(item => {
+                    return item.date === date && item.itemName === itemName && item.token === parseInt(token);
+                });
+
+                if (!plasticItem) {
+                    return res.status(400).json({
+                        message: 'Plastic item not found for the provided date, itemName, and token'
+                    });
+                }
+
+            if(plasticItem.quantity ===1){
+                user.plasticDetails.pull(plasticItem);
+            }
+            else if(plasticItem.quantity>1){
+                plasticItem.quantity-=quantity
+            }
+            
             user.save()
             .then(result=>{
                 res.status(200).json({
                     message:'returned plastic item',
                     userId:userId,
-                    plasticItem:{date,item,token}
+                    plasticItem:plasticItem
                 })
             })
             .catch(err=>{
@@ -85,7 +101,7 @@ router.post('/return',checkAuth,(req,res,next)=>{
                 res.status(500).json({
                     message:'Internal server error'
                 })
-            })
+            });
         }
         }
     })
