@@ -71,8 +71,6 @@ router.post('/',checkAuth, async (req, res, next) => {
                 token: token
             };
             user.orderDetails.push(orderDetails);
-            
-            totalAmount += product.cost * quantity;
         }
 
 
