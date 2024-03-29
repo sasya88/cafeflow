@@ -8,9 +8,15 @@ module.exports=(req,res,next)=>{
     }
     catch(error)
     {
-        console.log(error);
+        if(error.name === 'TokenExpiredError'){
+            return res.status(400).json({
+                message:'token has expired'
+            })
+        }
+        else{
         return res.status(400).json({
             message:'Auth failed'
-        })
+        });
+    }
     }
 }
